@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 namespace Hyo.HexItems
 {
@@ -9,6 +10,8 @@ namespace Hyo.HexItems
 
         Vector3 coordinate; //HexCell의 인덱스값
         public Vector3 Coordinate { get { return coordinate; } }
+        public TMP_Text cellName;
+
 
         SpriteRenderer sr;
         public bool isActiveCell { get; private set; } //활성셀인가?

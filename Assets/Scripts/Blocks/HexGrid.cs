@@ -7,6 +7,7 @@ using Hyo.Util;
 using Hyo.core;
 using UnityEngine.SceneManagement;
 
+
 namespace Hyo.HexItems
 {
     public class HexGrid : MonoBehaviour
@@ -23,6 +24,7 @@ namespace Hyo.HexItems
         public GameObject hexPrebab;
         private float hexRadius; // 헥사반지름은 따로 실행할 때 따로 계산해서 넣어놓기 
         float effectForHexRadius = 1.00f; //반지름에 곱해주어 헥사간의 간격을 조정한다. 
+
 
         // 헥사블럭 연결
         HexBlockController m_BlockController;
@@ -170,30 +172,6 @@ namespace Hyo.HexItems
                 }
             }
 
-            /* 초기 터치 이벤트 
-
-            Vector2 point = _inputmanger.touch2BoardPosition;
-            HexCell whatTouched = GetTouchedHexCell(point);
-
-
-            if (whatTouched != null && _inputmanger.isTouchDown)
-            {
-                if (IsGameScene)
-                {
-                    // TODO 게임씬이었을 때 터치 헀을 때 효과를 여기에 작성
-                    // 스와이프 기능 돌아가게 해야함
-                    Debug.Log($"게임씬일 때 선택된 셀 좌표입니다 : {whatTouched.Coordinate}");
-                }
-                else // 셀그리드디자인씬일 때.
-                {
-                    if (whatTouched != null && _inputmanger.isTouchDown)
-                    {
-                        TouchCellResult(whatTouched);
-                    }
-                }
-            }
-                        */ 
-
 
 
         }
@@ -284,8 +262,8 @@ namespace Hyo.HexItems
 
 
 
-            Vector3 isTouchedIndex = new Vector3((int)q, (int)r, s);
-
+            //Vector3 isTouchedIndex = new Vector3((int)q, (int)r, s);
+            Vector3 isTouchedIndex = new Vector3((int)q, (int)s, r); // r과 s가 반대가 되는 현상이 있어 여기서 바꿔줌
 
             // 터치한 셀값 구하기
             if (IsGameScene)
@@ -344,6 +322,8 @@ namespace Hyo.HexItems
         #region 게임씬용 메소드 
 
         // DIC이용해서 좌표값에 따른 셀 위치 뱉어내는 툴
+
+
         public Vector2 GetCellPosition(Vector3 coordinate)
         {
 
@@ -373,13 +353,7 @@ namespace Hyo.HexItems
         }
 
 
-        //TODO 이웃하는 셀 뱉어내는 리스트(방향 같이 줘야함 >> 나중에 3과 4 등등 일치하는 거 있는지 확인하게 할거임)
-
-
-        // 방향에 따른 이웃 셀 뱉어내는 툴 
-
-
-
+        // 방향에 따른 이웃 셀 뱉어내는 메소드를 아래 확장메서드로 구현
 
 
         #endregion  게임씬용 메소드 
@@ -492,7 +466,15 @@ namespace Hyo.HexItems
                     pos.x += offsetXforGid;
                     //pos.y += offsetYforGid;
 
-                    Vector3 newCordinate = new Vector3(q, r, (-q - r));
+                    // ★r
+
+                    //p r s 좌표에서 r과 s가 바뀌어 나오는 걸로 보여 순서를 바꿔줌
+                    int c_q = q;
+                    int c_r = -q - r;
+                    int c_s = r;
+                    
+                    
+                    Vector3 newCordinate = new Vector3(c_q, c_r, (c_s));
                     if (criteriaList != null) // 기준좌표 리스트가 있는지 확인 
                     {
                         // TODO 다른 자료구조 더 좋은 걸 쓸 수 있을 것 같은데, (이미 검사한 값은 검사 안한다던지..)고민을 더 해보고 싶다.
@@ -511,7 +493,7 @@ namespace Hyo.HexItems
 
                     }
 
-                    cell = CreateHexGO(pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
+                    cell = CreateHexGO(pos, ("Hex[" + c_q + "," + c_r + "," + (c_s).ToString() + "]"), ("["+ c_q + c_r + (c_s) +"]"));
 
                     //각 셀의 위치값도 저장해두자! 
                     cell.Init(newCordinate, this);
@@ -534,7 +516,7 @@ namespace Hyo.HexItems
         }
 
 
-        private HexCell CreateHexGO(Vector3 postion, string nam)
+        private HexCell CreateHexGO(Vector3 postion, string nam, string cordinate)
         {
             GameObject go = Instantiate(hexPrebab, postion, Quaternion.identity);
             go.name = nam;
@@ -544,6 +526,11 @@ namespace Hyo.HexItems
             Debug.Log($"{nam} : {go.transform.localPosition}");
 
             HexCell cell = go.GetComponent<HexCell>();
+
+            if (!IsGameScene) //게임씬이 아니면 좌표를 Text로 보여주게 한다. 
+            {
+                cell.cellName.text = cordinate;
+            }
 
             return cell;
         }
@@ -563,6 +550,29 @@ namespace Hyo.HexItems
         #endregion 셀그리드 생성과정 관련 메소드 (Start 단계에서 작동됨)
 
 
+    }
+
+    public static class CoordinatesExtensionMethod
+    {
+
+
+        /// <summary>
+        /// 이웃하는 육각형 좌표 뱉어내는 확장 메서드, 반환된 육각형좌표에 대한 상태확인은 따로 필요
+        /// </summary>
+        public static Vector3[] myNeighbors(this Vector3 me)
+        {
+            Vector3[] neighbors = new Vector3[6];
+
+            for (int i = 0; i < HexArchive.HexDirections.Length; i++)
+            {
+                Vector3 newNeighbor = me.PlusCoodinate(HexArchive.HexDirections[i]);
+                neighbors[i] = newNeighbor;
+            }
+
+            return neighbors;
+
+
+        }
     }
 
 }

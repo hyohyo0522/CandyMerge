@@ -67,7 +67,9 @@ public class CellGridDesignTool : MonoBehaviour
         //setting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 
         jsonName = Constants.JsonNameOfGridCellDesign;
-        jsonPath = Path.Combine(Application.dataPath + "/Data", jsonName);
+        jsonPath = Path.Combine(Application.dataPath + "/Resources" + "/Data/", jsonName);
+
+
         jsonPath = $"{jsonPath}.txt";
         Debug.Log($"力捞郊 单捞磐 颇老 林家 :{jsonPath}");
         saveMsg += jsonPath;

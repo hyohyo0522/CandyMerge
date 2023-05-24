@@ -22,7 +22,7 @@ namespace Hyo.HexItems
         Dictionary<Vector3, BlockCandyType> hexBlockResults = new Dictionary<Vector3, BlockCandyType>();
         public Dictionary<Vector3, BlockCandyType> HexBlockResults()
         {
-            Debug.Assert(Created_hexBlockResults);
+            Debug.Assert(Created_hexBlockResults); //일단, 처음 셔플하고 블럭 생성될 때만 쓸 수 있게 일단 이 디버깅 추가! 
             return hexBlockResults;
         }
 
@@ -36,7 +36,7 @@ namespace Hyo.HexItems
         Vector3 s_inspectionDir = HexArchive.HexDirections[2];
 
         #endregion 각 좌표당 라인 관리(중복검사)를 위한 값
-        //
+        
 
 
         //생성자
@@ -50,6 +50,12 @@ namespace Hyo.HexItems
             Created_hexBlockResults = true;
         }
 
+
+
+
+        #region 블럭정보갱신
+
+
         /// <summary>
         /// 블럭을 제거한 후 이동하고 나서 실행되어야 한다. 
         /// </summary>
@@ -58,10 +64,12 @@ namespace Hyo.HexItems
         {
 
             hexBlockResults = m_bController.HexBlockResults;
-
-            //m_bController();
         }
 
+
+
+
+        #endregion  블럭정보갱신
 
 
         #region 블럭 셔플
@@ -100,10 +108,6 @@ namespace Hyo.HexItems
             }
 
         }
-
-        //2. 전체 블럭 중복 검사(아래 region)
-        //3. 중복되어 저장된 블럭만 랜덤 다시 생성하고 > 중복검사 다시 (재귀함수?)
-        //4. 다 완성되면 셔플 끝!
 
 
 
@@ -305,11 +309,8 @@ namespace Hyo.HexItems
 
 
         #region 떨어지는 블럭 구현
-
-        //비어있는 블럭 리스트를 구하는 함수 
         
-        
-        public  List<Vector3> allEmptyBlock()
+        public List<Vector3> allEmptyBlock()  //비어있는 블럭 리스트를 구하는 함수 
         {
             List<Vector3> b_empty = new List<Vector3>();
 
@@ -335,7 +336,6 @@ namespace Hyo.HexItems
 
 
         //q라인별로 비어있는 블럭 리스트 정리하는 함수 >> 이건 Axial coordinates 자료를 사용하면 좋을 것 같다! 
-
 
 
         //주어진 리스트에서 q축 최솟값 뽑는 함수
